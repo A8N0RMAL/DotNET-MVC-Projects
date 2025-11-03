@@ -1,0 +1,84 @@
+﻿@model IEnumerable<Post>
+
+@{
+    ViewData["Title"] = "Posts by Author";
+    var authorFilter = ViewData["AuthorFilter"] as string;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Posts by Author</h1>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Search Posts by Author</h5>
+                    <form asp-action="ByAuthor" method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <input type="text" name="author" class="form-control"
+                                   placeholder="Enter author name to search..."
+                                   value="@authorFilter" />
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary me-2">Search</button>
+                            <a asp-action="Index" class="btn btn-secondary">All Posts</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(authorFilter))
+            {
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Posts by "@authorFilter"</h2>
+                    <span class="badge bg-primary">@Model.Count() posts found</span>
+                </div>
+
+                @if (Model.Any())
+                {
+                    <div class="row">
+                        @foreach (var post in Model)
+                        {
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@post.Title</h5>
+                                        <p class="card-text">
+                                            @(post.Content.Length > 150 ? post.Content.Substring(0, 150) + "..." : post.Content)
+                                        </p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <strong>By:</strong> <span class="text-primary">@post.Author</span> |
+                                                <strong>Date:</strong> @post.CreatedDate.ToString("MMM dd, yyyy")
+                                            </small>
+                                            <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-outline-primary btn-sm">Read More</a>
+                                            <a asp-action="Edit" asp-route-id="@post.Id" class="btn btn-outline-warning btn-sm">Edit</a>
+                                            <a asp-action="Delete" asp-route-id="@post.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info text-center">
+                        <h4>No posts found</h4>
+                        <p>No posts were found for author "@authorFilter".</p>
+                        <a asp-action="Create" class="btn btn-primary">Create New Post</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-light text-center">
+                    <h4>Search for Authors</h4>
+                    <p>Enter an author name in the search box above to find their posts.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
